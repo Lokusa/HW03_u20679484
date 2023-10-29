@@ -1,0 +1,76 @@
+﻿@model List<HW03_u20679484.Models.StudentMonthlyBorrow>
+
+@{
+    ViewBag.Title = "Monthly Borrow Report";
+}
+
+<div class="container">
+    <h2>Monthly Borrow Report</h2>
+    <p>Select a student to generate the report:</p>
+
+    @using (Html.BeginForm("GenerateReport", "BorrowReport", FormMethod.Post))
+    {
+        <div class="form-group">
+            @Html.DropDownList("studentId", (SelectList)ViewBag.StudentsList, "Select a student", new { @class = "form-control" })
+            <button type="submit" class="btn btn-primary">Generate Report</button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-6">
+            <canvas id="columnChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Data processing code to eliminate duplicate months and aggregate books borrowed
+    var reportData = [
+        [{ "Month": "12/2015", "BooksBorrowed": 1 }, { "Month": "12/2015", "BooksBorrowed": 1 }, { "Month": "01/2016", "BooksBorrowed": 1 }, { "Month": "02/2016", "BooksBorrowed": 1 }, { "Month": "03/2016", "BooksBorrowed": 1 }, { "Month": "03/2016", "BooksBorrowed": 1 }, { "Month": "04/2016", "BooksBorrowed": 1 }, { "Month": "04/2016", "BooksBorrowed": 1 }, { "Month": "06/2016", "BooksBorrowed": 1 }, { "Month": "08/2016", "BooksBorrowed": 1 }, { "Month": "10/2016", "BooksBorrowed": 1 }, { "Month": "11/2016", "BooksBorrowed": 1 }, { "Month": "12/2016", "BooksBorrowed": 1 }, { "Month": "12/2016", "BooksBorrowed": 1 }, { "Month": "01/2017", "BooksBorrowed": 1 }, { "Month": "01/2017", "BooksBorrowed": 1 }, { "Month": "01/2017", "BooksBorrowed": 1 }, { "Month": "02/2017", "BooksBorrowed": 1 }, { "Month": "03/2017", "BooksBorrowed": 1 }, { "Month": "03/2017", "BooksBorrowed": 1 }]
+    ];
+
+    var uniqueLabels = [];
+    var dataPoints = [];
+
+    reportData.forEach(function (item) {
+        var month = item.Month;
+        var booksBorrowed = item.BooksBorrowed;
+
+        var existingMonthIndex = uniqueLabels.indexOf(month);
+
+        if (existingMonthIndex === -1) {
+            uniqueLabels.push(month);
+            dataPoints.push(booksBorrowed);
+        } else {
+            dataPoints[existingMonthIndex] += booksBorrowed;
+        }
+    });
+
+    var ctx = document.getElementById('columnChart').getContext('2d');
+
+    // Create the column chart with unique months and aggregated data
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: uniqueLabels,
+            datasets: [{
+                label: 'Books Borrowed',
+                data: dataPoints,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    stepSize: 1
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>

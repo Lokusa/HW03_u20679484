@@ -1,0 +1,285 @@
+﻿@using PagedList
+@using PagedList.Mvc
+
+@model HW03_u20679484.Models.CombinedViewModel
+
+@{
+    ViewBag.Title = "CombinedIndex";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    table.table-striped-light-pink {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+        table.table-striped-light-pink th,
+        table.table-striped-light-pink td {
+            border: 1px solid #ffffff;
+            padding: 8px;
+            text-align: left;
+        }
+
+        table.table-striped-light-pink thead {
+            background-color: #ffc0cb; /* Light pink header */
+            color: #333;
+        }
+
+        table.table-striped-light-pink tbody tr:nth-child(odd) {
+            background-color: #f9f9f9; /* Light gray zebra stripe odd rows */
+        }
+
+        table.table-striped-light-pink tbody tr:nth-child(even) {
+            background-color: #e9e9e9; /* Light gray zebra stripe even rows */
+        }
+
+    /* Styles for the links */
+    .create-link {
+        color: #007BFF; /* Primary color for Create link */
+    }
+
+    .edit-link {
+        color: #FFC107; /* Warning color for Edit link */
+    }
+
+    .delete-link {
+        color: #DC3545; /* Danger color for Delete link */
+    }
+
+    .details-link {
+        color: #17A2B8; /* Info color for Details link */
+    }
+
+    /* Style for pagination buttons */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        list-style: none;
+    }
+
+    .pagination li {
+        margin: 0 5px;
+    }
+
+    .pagination a {
+        display: block;
+        padding: 5px 10px;
+        background-color: #007BFF;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+
+    .pagination a:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Students</h2>
+
+        <p>
+            <a href="#" class="create-link btn btn-primary" data-url="@Url.Action("Create", "students")">Create New Student</a>
+        </p>
+
+        <table class="table table-striped-light-pink" style="width:100%">
+            <!-- Display ToDoList data -->
+            <tr>
+                <th style="background-color:hotpink">
+                    ID
+                </th>
+                <th style="background-color: hotpink">
+                    Name
+                </th>
+                <th style="background-color: hotpink">
+                    Surname
+                </th>
+                <th style="background-color: hotpink">
+                    BirthDate
+                </th>
+                <th style="background-color: hotpink">
+                    Gender
+
+                </th>
+                <th style="background-color: hotpink">
+                    Class
+                </th>
+                <th style="background-color: hotpink">
+                    Point
+                </th>
+
+            </tr>
+            @foreach (var student in Model.Students)
+            {
+                <tr>
+                    <td>
+                        @student.studentId
+                    </td>
+                    <td>
+                        @student.name
+                    </td>
+                    <td>
+                        @student.surname
+                    </td>
+                    <td>
+                        @student.birthdate
+                    </td>
+                    <td>
+                        @student.gender
+                    </td>
+                    <td>@(student.@class)</td>
+
+                    <td>
+                        @student.point
+                    </td>
+
+                </tr>
+            }
+        </table>
+        @Html.PagedListPager(
+     Model.Students, // Pass the Students paged list
+     page => Url.Action("CombinedIndex", new { studentPage = page }),
+     new PagedListRenderOptions
+     {
+         Display = PagedListDisplayMode.IfNeeded,
+         DisplayPageCountAndCurrentLocation = true,
+         MaximumPageNumbersToDisplay = 5, // Adjust this as needed
+     }
+ )
+    </div>
+    <div class="col-md-12">
+        <h2>Books</h2>
+
+        <p>
+            <a href="#" class="create-link btn btn-primary" data-url="@Url.Action("Create", "books")">Create New Book</a>
+        </p>
+
+        <table class="table table-striped-light-pink" style="width:100%"">
+            <!-- Display ListItem data -->
+            <tr>
+                <th style="background-color: hotpink">
+                    ID
+                </th>
+                <th style="background-color: hotpink">
+                    Name
+                </th>
+                <th style="background-color: hotpink">
+                    Pagecount
+                </th>
+                <th style="background-color: hotpink">
+                    Point
+                </th>
+                <th style="background-color:hotpink">
+                    Status
+                </th>
+
+            </tr>
+            @foreach (var books in Model.Books)
+            {
+                <tr>
+                    <td>
+                        @books.bookId
+                    </td>
+                    <td>
+                        @books.name
+                    </td>
+                    <td>
+                        @books.pagecount
+                    </td>
+                    <td>
+                        @books.point
+                    </td>
+                    <td>
+                        <span id="status-@books.bookId">Calculating...</span>
+                     
+                    </td>
+                </tr>
+            }
+        </table>
+        @Html.PagedListPager(
+       Model.Books, // Replace this with the actual collection you want to paginate for books
+       page => Url.Action("CombinedIndex", new { bookPage= page }),
+       new PagedListRenderOptions
+       {
+           Display = PagedListDisplayMode.IfNeeded,
+           DisplayPageCountAndCurrentLocation = true,
+           MaximumPageNumbersToDisplay = 5, // Adjust this as needed
+
+       }
+   )
+    </div>
+
+</div>
+<div id="myModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"> Async CRUD</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modal-content">
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script>
+<script>
+
+        // JavaScript to fetch and update book status asynchronously
+        $(document).ready(function () {
+            // Function to get book status and update UI
+            function updateBookStatus(bookId) {
+                $.get("/Home/GetBookStatus?bookId=" + bookId, function (status) {
+                    $("#status-" + bookId).text(status);
+                });
+            }
+
+            // Iterate through each book and update its status
+            @foreach (var book in Model.Books)
+            {
+                <text>updateBookStatus(@book.bookId);</text>
+            }
+        });
+    $(function () {
+        // Function to handle Edit link click event in the Combined View and Details modal
+        $(".edit-link, .edit-link-in-modal").click(function (e) {
+            e.preventDefault();
+            var url = $(this).data("url");
+
+            $.get(url, function (data) {
+                $("#modal-content").empty();
+                $("#modal-content").html(data);
+                $("#myModal").modal("show");
+            });
+        });
+
+        // Function to handle form submission within the modal
+        $("#modal-content").on("submit", "form", function (e) {
+            e.preventDefault();
+            var form = $(this);
+            var url = form.attr("action");
+            var formData = form.serialize();
+
+            $.post(url, formData, function (data) {
+                $("#myModal").modal("hide");
+                location.reload();
+            });
+        });
+
+        // Function to handle other links (details, delete, create) within the modal
+        $(".details-link, .delete-link, .create-link, .create-lookup-link").click(function (e) {
+            e.preventDefault();
+            var url = $(this).data("url");
+
+            $.get(url, function (data) {
+                $("#modal-content").empty();
+                $("#modal-content").html(data);
+                $("#myModal").modal("show");
+            });
+        });
+    });
+</script>
